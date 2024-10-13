@@ -367,3 +367,71 @@ print(cevrilmis_veri)
 <br>
 
 # \# **SORU-4**
+
+2023 yılının son ayındaki hava ölçümlerinin minimum (min) ve maksimum (mak)
+değerleri, çeşitli ülkelerin farklı şehirleri için "data" adlı csv dosyasına kaydedilmiştir.
+Kaydedilen değişkenler humidity, pm25, temperature, precipitation, wind-speed
+ve pressure şeklinde olmakla beraber, her şehir için değişkenlerin hepsi mevcut
+değildir. Buna göre,
+
+a) Her bir değişken için ülke ve şehir ayırımı yapmaksızın minimum (min) ve
+maksimum (mak) değerlerinin iki ayrı ortalama değişken vektörünü (x¯min ve
+x¯mak) R programında bulunuz.
+b) Her bir değişken için şehir bazında minimum (min) ve maksimum (mak)
+değerlerinin iki ayrı ortalama değişken vektörünü (x¯min ve x¯mak) R programında
+bulunuz.
+
+<br>
+
+### Cevap -4.A
+
+
+#### **Adım 1 :**
+
+Tüm veri kümesi için şehir ve ülke ayırımı yapmaksızın genel ortalamaları hesaplıyoruz.(öncelikli olarak Rstudio uygulamasuna bazı kütüphanler ve veriyi yükleme işlemi sağlanır.)
+```{r, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+library(dplyr)
+data. <- read.csv("~/Desktop/MatrisRstudio/data .csv")
+```
+<br>
+```{r, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+# Genel ortalama hesaplama (min ve max ortalamaları)
+mean_min_max_genel <- data. %>%
+  group_by(olcum) %>%
+  summarise(across(c(min, max), mean, na.rm = TRUE))
+
+```
+
+
+```{r}
+# Sonuçları gösterme
+print(mean_min_max_genel)
+```
+
+<br>
+
+Elde edilen çıktı, her bir ölçüm değişkeninin genel ortalama değerini verir. Örneğin, "humidity" için çıkan ortalama değeri, veri kümesindeki tüm "humidity" ölçümlerinin ortalamasını gösterir.
+
+<br> 
+
+### Cevap -4.B
+
+
+#### **Adım 1 :**
+İlk şıkkı yaparken gerekli kütüphane ve veri seti yüklendiği için tekrardan bu işlemi sağlamaya gerek yoktur.
+
+Veri kümesinde bulunan her bir şehri ayrı bir grup olarak ele alır ve bu gruplar için ortalama değerleri hesaplar. Yani, her şehrin humidity, pm25, temperature, precipitation, wind-speed, ve pressure için ortalama değerlerini bulur.
+
+```{r, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+# Şehir bazında ortalama hesaplama
+şeort_min_max <- data. %>%
+  group_by(olcum, sehir) %>%
+  summarise(across(c(min, max), mean, na.rm = TRUE))
+```
+
+```{r}
+# Sonuçları gösterme
+print(şeort_min_max)
+```
+
+Elde edilen sonuçlar, her şehirdeki ortalama hava kalitesi ve diğer ölçümler hakkında bilgi verir. Örneğin, bir şehir için "pm25" ortalama değeri diğer şehirlerden daha yüksekse, bu şehirde hava kirliliğinin diğerlerine göre daha fazla olduğunu söyleyebiliriz.

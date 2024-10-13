@@ -683,6 +683,90 @@ cevrilmis_veri &lt;- apply(mesaj_gruplar, c(1, 2), sayi_to_harf)</code></pre>
 </div>
 <div id="soru-4" class="section level1">
 <h1># <strong>SORU-4</strong></h1>
+<p>2023 yılının son ayındaki hava ölçümlerinin minimum (min) ve maksimum
+(mak) değerleri, çeşitli ülkelerin farklı şehirleri için “data” adlı csv
+dosyasına kaydedilmiştir. Kaydedilen değişkenler humidity, pm25,
+temperature, precipitation, wind-speed ve pressure şeklinde olmakla
+beraber, her şehir için değişkenlerin hepsi mevcut değildir. Buna
+göre,</p>
+<ol style="list-style-type: lower-alpha">
+<li>Her bir değişken için ülke ve şehir ayırımı yapmaksızın minimum
+(min) ve maksimum (mak) değerlerinin iki ayrı ortalama değişken
+vektörünü (x¯min ve x¯mak) R programında bulunuz.</li>
+<li>Her bir değişken için şehir bazında minimum (min) ve maksimum (mak)
+değerlerinin iki ayrı ortalama değişken vektörünü (x¯min ve x¯mak) R
+programında bulunuz.</li>
+</ol>
+<p><br></p>
+<div id="cevap--4.a" class="section level3">
+<h3>Cevap -4.A</h3>
+<div id="adım-1-4" class="section level4">
+<h4><strong>Adım 1 :</strong></h4>
+<p>Tüm veri kümesi için şehir ve ülke ayırımı yapmaksızın genel
+ortalamaları hesaplıyoruz.(öncelikli olarak Rstudio uygulamasuna bazı
+kütüphanler ve veriyi yükleme işlemi sağlanır.)</p>
+<pre class="r"><code>library(dplyr)
+data. &lt;- read.csv(&quot;~/Desktop/MatrisRstudio/data .csv&quot;)</code></pre>
+<p><br></p>
+<pre class="r"><code># Genel ortalama hesaplama (min ve max ortalamaları)
+mean_min_max_genel &lt;- data. %&gt;%
+  group_by(olcum) %&gt;%
+  summarise(across(c(min, max), mean, na.rm = TRUE))</code></pre>
+<pre class="r"><code># Sonuçları gösterme
+print(mean_min_max_genel)</code></pre>
+<pre><code>## # A tibble: 6 × 3
+##   olcum            min     max
+##   &lt;chr&gt;          &lt;dbl&gt;   &lt;dbl&gt;
+## 1 humidity       59.8    94.6 
+## 2 pm25           31.9   119.  
+## 3 precipitation  17.1    52.8 
+## 4 pressure      991.   1012.  
+## 5 temperature     5.32   14.1 
+## 6 wind-speed      1.01    6.34</code></pre>
+<p><br></p>
+<p>Elde edilen çıktı, her bir ölçüm değişkeninin genel ortalama değerini
+verir. Örneğin, “humidity” için çıkan ortalama değeri, veri kümesindeki
+tüm “humidity” ölçümlerinin ortalamasını gösterir.</p>
+<p><br></p>
+</div>
+</div>
+<div id="cevap--4.b" class="section level3">
+<h3>Cevap -4.B</h3>
+<div id="adım-1-5" class="section level4">
+<h4><strong>Adım 1 :</strong></h4>
+<p>İlk şıkkı yaparken gerekli kütüphane ve veri seti yüklendiği için
+tekrardan bu işlemi sağlamaya gerek yoktur.</p>
+<p>Veri kümesinde bulunan her bir şehri ayrı bir grup olarak ele alır ve
+bu gruplar için ortalama değerleri hesaplar. Yani, her şehrin humidity,
+pm25, temperature, precipitation, wind-speed, ve pressure için ortalama
+değerlerini bulur.</p>
+<pre class="r"><code># Şehir bazında ortalama hesaplama
+şeort_min_max &lt;- data. %&gt;%
+  group_by(olcum, sehir) %&gt;%
+  summarise(across(c(min, max), mean, na.rm = TRUE))</code></pre>
+<pre class="r"><code># Sonuçları gösterme
+print(şeort_min_max)</code></pre>
+<pre><code>## # A tibble: 1,033 × 4
+## # Groups:   olcum [6]
+##    olcum    sehir            min   max
+##    &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt;
+##  1 humidity Abidjan         60.5    91
+##  2 humidity Adana           45      93
+##  3 humidity Adapazarı       51.8    93
+##  4 humidity Aguascalientes  22      74
+##  5 humidity Almaty          77      92
+##  6 humidity Alor Setar      52      94
+##  7 humidity Amman           67      93
+##  8 humidity Amsterdam       70.9    97
+##  9 humidity Ankara          66     100
+## 10 humidity Arad            56     100
+## # ℹ 1,023 more rows</code></pre>
+<p>Elde edilen sonuçlar, her şehirdeki ortalama hava kalitesi ve diğer
+ölçümler hakkında bilgi verir. Örneğin, bir şehir için “pm25” ortalama
+değeri diğer şehirlerden daha yüksekse, bu şehirde hava kirliliğinin
+diğerlerine göre daha fazla olduğunu söyleyebiliriz.</p>
+</div>
+</div>
 </div>
 
 
