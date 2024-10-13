@@ -39,3 +39,24 @@ matris <- matrix(sample(1:100, toplam_sesli_harf^2, replace = TRUE),
 print(matris)
 
 ##kod bloklarını parça parça çalıştır.!!!
+
+
+# Verilen matrisi tanımlama
+A <- matrix(c(31, 67, 14, 69,
+              79, 42, 25, 91,
+              51, 50, 90, 57,
+              14, 43, 91, 92), 
+            nrow = 4, byrow = TRUE)
+
+# Matrisi hesaplayarak özdeğerlerini bulma
+eigenvalues <- eigen(A)$values
+
+# İz (trace) hesaplama: özdeğerlerin toplamı
+trace_A <- sum(eigenvalues)
+
+# Determinant hesaplama: özdeğerlerin çarpımı
+determinant_A <- prod(eigenvalues)
+
+# Sonuçları gösterme
+trace_A
+determinant_A

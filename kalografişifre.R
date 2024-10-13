@@ -61,22 +61,4 @@ print(cevrilmis_veri)
 
 
 
-#Bu tür şifreleme yöntemlerinde mesajı şifrelemek için genellikle matris çarpma işlemi yapılır. İlk olarak, verilen mesajın sayısal formunu elde edeceğiz ve sonra bu sayısal mesaj vektörünü şifreleme matrisi Q ile çarpacağız.
 
-#Adım: Mesajı Sayısal Formata Dönüştürme
-
-#Türk alfabesinde "A" harfi 1'e karşılık gelir ve "Z" harfi 29'a kadar devam eder.
-#Boşluk karakteri için 30 değeri kullanacağız.
-#Adım: Mesajı Vektörlere Ayırma
-
-#Şifreleme matrisi 3x3 boyutunda olduğundan, mesajı 3 elemanlı bloklara ayıracağız. Eğer son blok 3 elemanlı olmazsa, boşluk karakteri (30) ile tamamlayacağız.#
-#Adım: Matris Çarpımı ile Şifreleme
-
-#Her 3 elemanlı vektörü, şifreleme matrisi Q ile çarparak şifreli mesajı elde edeceğiz.
-#Şifreyi Çözme
-
-#Mesajı alan kişi, şifreli mesajı çözmek için şifreleme matrisi Q'nun tersini alacak ve bu ters matris ile şifreli vektörleri çarparak orijinal mesajı geri elde edecektir.
-#Şimdi bu adımları gerçekleştirelim. Öncelikle mesajı sayısal formata dönüştürelim: "YARIN GECE YARISI AŞTİDE"
-
-
-#Bu sayıları 3 elemanlı gruplara ayıralım ve eğer gerekirse boşluk karakteri (30) ile tamamlayalım.
