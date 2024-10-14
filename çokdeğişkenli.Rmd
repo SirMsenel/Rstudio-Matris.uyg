@@ -3,9 +3,6 @@ title: "Çok Değişkenli Çözümleme Ödev"
 author: "Mehmet Şenel"
 date: "`r Sys.Date()`"
 output: html_document
-params:
-  isim: "Örnek"
-  soyisim: "Soyisim"
 ---
 
 ```{r setup, include=FALSE}
@@ -435,3 +432,15 @@ print(şeort_min_max)
 ```
 
 Elde edilen sonuçlar, her şehirdeki ortalama hava kalitesi ve diğer ölçümler hakkında bilgi verir. Örneğin, bir şehir için "pm25" ortalama değeri diğer şehirlerden daha yüksekse, bu şehirde hava kirliliğinin diğerlerine göre daha fazla olduğunu söyleyebiliriz.
+
+
+# \# **SORU-5**
+En çok hangi soru ya da sorularda zorlandığınızı gerekçeleri ile belirtiniz.
+
+<br>
+
+### Cevap 5 
+
+En çok üçüncü soruda zorlandım.üçüncü soruda zorlanmamın temel nedeni sorunun mantığını anlamanın yanı sıra diğer sorulara nazaran çift taraflı bir yapısının olmasıydı.Sorunun bir şifrelemeyi gönderen kişi kısmının olmasının yanı sıra aynı zamanda şifreyi çözen kullancı tarafından da bakıldığı için ekstra fonskiyon ve yapılarıda oluşturmak gerekli oldu.
+
+
