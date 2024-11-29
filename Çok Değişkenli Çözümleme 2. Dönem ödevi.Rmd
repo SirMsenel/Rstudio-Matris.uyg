@@ -134,93 +134,103 @@ Verilen \( Q \) fonksiyonu şu şekilde verilmiştir:
 Q = x_1^2 + 5x_2^2 + 2x_3^2 + 6x_2x_3 - 4x_1 - 8x_2 - 6x_3 + 9
 \]
 
-Bu fonksiyon, genel bir kuadratik form olan:
-
 \[
-Q = x^T A x - 2 b^T x + c
+f(x) = k \cdot e^{-\frac{1}{2} Q}
 \]
 
-şeklinde temsil edilebilir. Burada:
-- \( A \), kovaryans matrisinin tersi.
-- \( b \), ortalama vektörünü hesaplamak için kullanılan lineer terimlerin katsayıları.
-- \( c \), sabit terimdir.
+### Matematiksel Çözüm
 
-### 2. Kovaryans Matrisi ve Ortalama Vektörü Hesaplaması
+#### Adımlar:
 
-#### Matris Temsili
+1. **Kovaryans Matrisi** (\( A \)): \( Q \)'nun ikinci dereceden terimlerinden türetilir.
+2. **Ortalama Vektörü** (\( \mu \)): Formül \( \mu = -\frac{1}{2}A^{-1}b \) ile hesaplanır.
+3. **Varyanslar**: Kovaryans matrisinin köşegen elemanlarıdır.
+4. **Sonuçlar**: En yüksek varyansa ve en düşük ortalamaya sahip değişkenler belirlenir.
 
-Fonksiyonu incelediğimizde, \( A \), \( b \), ve \( c \) parametrelerini şu şekilde tanımlayabiliriz:
-
-- \( A = \begin{bmatrix} 2 & 3 & 0 \\ 3 & 10 & 6 \\ 0 & 6 & 4 \end{bmatrix} \)
-- \( b = \begin{bmatrix} 4 \\ 8 \\ 6 \end{bmatrix} \)
-- \( c = 9 \)
-
-Bu parametreleri kullanarak kovaryans matrisi (\( \Sigma \)) ve ortalama vektörünü (\( \mu \)) hesaplayacağız.
+### Q fonksiyonu için matris ve vektör temsili
 
 ```{r}
-# Gerekli paketleri yükle
-library(kableExtra)
+knitr::opts_chunk$set(echo = TRUE)
+A <- matrix(c(1, 0, 0,
+              0, 5, 3,
+              0, 3, 2), nrow = 3, byrow = TRUE)  # Kovaryans matrisi
+b <- c(-4, -8, -6)  # Lineer terimler
+c <- 9  # Sabit terim
 
-# Matris temsili
-A <- matrix(c(2, 3, 0, 
-              3, 10, 6, 
-              0, 6, 4), nrow = 3, byrow = TRUE)
-
-b <- c(4, 8, 6)  # Lineer terimler için katsayılar
-c <- 9           # Sabit terim
-
-# Kovaryans matrisi (Sigma)
-Sigma <- solve(A)
-
-# Ortalama vektörü (mu)
-mu <- solve(A) %*% b
 ```
 
 
+### Ortalama Vektörü Hesaplama
+
 ```{r}
-# Kovaryans matrisi (Sigma) tablosu
-Sigma_table <- as.data.frame(Sigma)
-colnames(Sigma_table) <- c("x1", "x2", "x3")
-rownames(Sigma_table) <- c("x1", "x2", "x3")
-
-# Ortalama vektörü (mu) tablosu
-mu_table <- as.data.frame(t(mu))
-colnames(mu_table) <- c("mu1", "mu2", "mu3")
-
-# Kovaryans matrisi ve Ortalama vektörü tablosunu stilize etme
-Sigma_table %>%
-  kable("html", caption = "Kovaryans Matrisi (Sigma)") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
-
-mu_table %>%
-  kable("html", caption = "Ortalama Vektörü (mu)") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+# Ortalama vektörü
+mu <- solve(A) %*% (-b / 2)
+mu  # Ortalama vektörü
 ```
 
 
-- Kovaryans Matrisi (Sigma) :
-Kovaryans matrisi, her bir değişkenin birbirleriyle olan ilişkilerini ve varyanslarını gösterir.
-- Ortalama Vektörü (mu) :
-Ortalama vektörü, her bir değişkenin beklenen değerini verir.
-
-
-### 3. En Yüksek Yayılım ve En Düşük Ortalama
-
-```{r}
-# Kovaryans matrisinin köşegenindeki varyanslar
-variances <- diag(Sigma)
-
-# En yüksek varyansa sahip değişken
-highest_variance_index <- which.max(variances)
-# En düşük ortalamaya sahip değişken
-lowest_mean_index <- which.min(mu)
-```
+### Kovaryans Matrisi ve Varyanslar
 
 
 ```{r}
-cat("En Yüksek Yayılım: Değişken", highest_variance_index, "ile x", highest_variance_index, "vardır.\n")
-cat("En Düşük Ortalama: Değişken", lowest_mean_index, "ile x", lowest_mean_index, "vardır.\n")
+# Yayılım matrisi (Kovaryans matrisi)
+cov_matrix <- solve(A)
+
+# Varyanslar (Kovaryans matrisinin köşegen elemanları)
+variances <- diag(cov_matrix)
+variances  # Varyanslar
+
 ```
+
+
+### En Yüksek Varyans ve En Düşük Ortalama
+
+
+```{r}
+# En yüksek varyans ve en düşük ortalama
+max_variance <- max(variances)
+max_var_index <- which(variances == max_variance)
+cat("En yüksek yayılıma sahip değişken: x", max_var_index, "\n")
+
+```
+
+```{r , echo=FALSE}
+library(ggplot2)
+
+# Varyans grafiği
+df_variances <- data.frame(Değişken = c("x1", "x2", "x3"), Varyans = variances)
+ggplot(df_variances, aes(x = Değişken, y = Varyans, fill = Değişken)) +
+  geom_bar(stat = "identity", color = "black") +
+  theme_minimal() +
+  labs(title = "Değişkenlere Göre Varyans", x = "Değişken", y = "Varyans") +
+  scale_fill_brewer(palette = "Pastel1")
+
+```
+
+- **Yukarıda çıktıda ve özellikle grafikte açıkca görüldüğü üzere "X3" değişkeni en çok yayılıma sahip değişkendir.**
+
+
+
+```{r}
+min_mean <- min(mu)
+min_mean_index <- which(mu == min_mean)
+cat("En düşük ortalamaya sahip değişken: x", min_mean_index, "\n")
+```
+
+
+```{r , echo=FALSE}
+# Ortalama vektörü grafiği
+df_means <- data.frame(Değişken = c("x1", "x2", "x3"), Ortalama = as.vector(mu))
+ggplot(df_means, aes(x = Değişken, y = Ortalama, fill = Değişken)) +
+  geom_bar(stat = "identity", color = "black") +
+  theme_minimal() +
+  labs(title = "Değişkenlere Göre Ortalama", x = "Değişken", y = "Ortalama") +
+  scale_fill_brewer(palette = "Set3")
+
+
+```
+
+-  **Yukarıda ki çıktıda ve grafikte görüldüğü üzere en düşük yayılıma sahip değişken "X2" olarak yer almıştır.**
 
 
 
@@ -384,3 +394,250 @@ if(korelasyon > 1) {
 
 ### Sonuç 
 - Yöneticiye Göre: Mağaza yöneticisinin fiyat değişimlerinin satışlar üzerinde büyük bir etkisi olduğunu düşündüğü ifade ediliyordu. Ancak, hesaplanan korelasyon (-0.17) bu görüşü tam olarak desteklemiyor. Fiyat değişimi ile satılan kazak sayısı arasında zayıf bir negatif ilişki bulunuyor. Bu, fiyat değişiminin satışları üzerinde önemli bir etkisi olmadığına işaret eder.Satılan kazak sayısı ve fiyat değişimi arasındaki ilişki çok güçlü ve anlamlı değil.
+
+
+## <span style="color:red">Soru 5</span>
+Çok değişkenli normal dağıldığı bilinen bir verisetinde **X1**, 2024 yazında bir tatil beldesinde günlük satılan dondurma sayısını, **X2**, Celcius cinsinden günlük hava sıcaklığını ve **X3** de o beldeye gelen günlük turist sayısını göstermektedir. Veri setinin kovaryans matrisi ve ortalama vektörü aşağıdaki gibi verildiğine göre hava sıcaklığının 25 derece olduğunun bilindiği bir gün için, dondurma sayısı ve günlük turist sayısı değişkenlerinin bileşik olasılık yoğunluk fonksiyonunu **R** programındaki bulgularınıza dayanarak yazınız.
+
+**Kovaryans Matrisi (Σ):**
+
+\[
+\Sigma = \begin{pmatrix}
+4000 & 80 & 6000 \\
+6000 & 120 & 10000 \\
+80 & 4 & 120
+\end{pmatrix}
+\]
+
+**Ortalama Vektörü (µ):**
+
+\[
+\mu = \begin{pmatrix}
+300 \\
+30 \\
+500
+\end{pmatrix}
+\]
+
+## <span style="color:red">Çözüm 5</span>
+
+- Bu soruda, **çok değişkenli normal dağılım** ile ilgili bir koşullu dağılım hesaplaması yapmamız gerekiyor. Verilen kovaryans matrisi ve ortalama vektörüne dayanarak, **X1 (dondurma sayısı)** ve **X3 (turist sayısı)** değişkenlerinin **X2 = 25** olduğunda bileşik olasılık yoğunluk fonksiyonunu hesaplayacağız.
+
+### Koşullu Dağılım Hesaplaması
+
+Çok değişkenli normal dağılımdan **koşullu dağılım** hesaplama için, **X1 ve X3**'ün koşullu dağılımı şu şekilde hesaplanabilir:
+
+- **Koşullu Ortalama**:
+  \[
+  \mu_{X1|X2} = \mu_{X1} + \Sigma_{X1X2} \Sigma_{X2X2}^{-1} (X2 - \mu_{X2})
+  \]
+  \[
+  \mu_{X3|X2} = \mu_{X3} + \Sigma_{X3X2} \Sigma_{X2X2}^{-1} (X2 - \mu_{X2})
+  \]
+
+- **Koşullu Kovaryans**:
+  \[
+  \Sigma_{X1|X2} = \Sigma_{X1X1} - \Sigma_{X1X2} \Sigma_{X2X2}^{-1} \Sigma_{X2X1}
+  \]
+  \[
+  \Sigma_{X3|X2} = \Sigma_{X3X3} - \Sigma_{X3X2} \Sigma_{X2X2}^{-1} \Sigma_{X2X3}
+  \]
+  
+  
+
+ **Veri Girişi**:
+
+```{r}
+# Verilen Kovaryans Matrisi (Σ)
+Sigma <- matrix(c(4000, 80, 6000,
+                  6000, 120, 10000,
+                  80, 4, 120), nrow = 3, byrow = TRUE)
+
+# Verilen Ortalama Vektörü (µ)
+mu <- c(300, 30, 500)
+
+# Hava sıcaklığı (X2) için verilen değer
+X2_value <- 25
+
+```
+
+
+ **Koşullandırma**:
+```{r}
+# Kovaryans parçalama
+Sigma_12 <- Sigma[c(1, 3), 2]
+Sigma_22 <- Sigma[2, 2]
+Sigma_11 <- Sigma[c(1, 3), c(1, 3)]
+
+# Ortalama vektör parçalama
+mu_1 <- mu[c(1, 3)]
+mu_2 <- mu[2]
+
+# Koşullu Ortalama
+mu_cond <- mu_1 + Sigma_12 / Sigma_22 * (X2_value - mu_2)
+
+# Koşullu Kovaryans
+Sigma_cond <- Sigma_11 - (Sigma_12 %*% t(Sigma_12)) / Sigma_22
+
+# Kovaryans Matrisini Simetrik Hale Getirme
+Sigma_cond <- (Sigma_cond + t(Sigma_cond)) / 2
+
+```
+
+
+```{r}
+mu_cond
+Sigma_cond
+```
+- Koşullu Ortalama: Koşullu ortalama, verilen bir koşul altında (bu durumda hava sıcaklığı 
+𝑋
+2
+=
+25
+X 
+2
+​
+ =25) diğer değişkenlerin beklenen değerini temsil eder. Yani, hava sıcaklığının 25°C olduğu bir günde, dondurma sayısının ve turist sayısının beklenen değerleri sırasıyla 296.67 ve 499.83'tür.
+
+- Koşullu Kovaryans: Koşullu kovaryans matrisi, verilen koşul altında (hava sıcaklığı 
+𝑋
+2
+=
+25
+X 
+2
+​
+ =25) değişkenler arasındaki ilişkinin gücünü ve yönünü gösterir. Bu durumda:
+
+Dondurma sayısı ve turist sayısı arasındaki kovaryans 3037.33'tür, bu da iki değişken arasında güçlü bir ilişki olduğunu gösterir.
+Dondurma sayısının ve turist sayısının kendi varyansları sırasıyla 3946.67 ve 119.87'dir.
+
+
+### Çok değişkenli yoğunluk fonksiyonu
+```{r}
+library(mvtnorm)
+dens <- function(x1, x3) {
+  dmvnorm(c(x1, x3), mean = mu_cond, sigma = Sigma_cond)
+}
+```
+Fonksiyonun Açıklaması
+dens: Bu fonksiyon, 
+𝑋
+1
+X 
+1
+​
+  ve 
+𝑋
+3
+X 
+3
+​
+  için koşullu yoğunluğu hesaplar. Fonksiyonun parametreleri:
+  
+- x1: Dondurma sayısı (X1) için bir değeri temsil eder.
+- x3: Turist sayısı (X3) için bir değeri temsil eder.
+- dmvnorm: mvtnorm paketinden gelen bir fonksiyondur ve çok değişkenli normal dağılıma ait yoğunluk fonksiyonunu hesaplar.
+- mean: Koşullu ortalamaları temsil eden mu_cond vektörü kullanılır.
+- sigma: Koşullu kovaryans matrisini temsil eden Sigma_cond matrisi kullanılır.
+
+
+## <span style="color:red">Soru 6</span>
+
+Olasılık, Matematiksel İstatistik ve Regresyon Analizi derslerinden 100 üzerinden alınan notlar aşağıda verilmiştir. Herhangi bir öğrencinin bu üç dersin eşit ağırlıklandırmaları üzerinden hesaplanacak not ortalaması Y olarak tanımlanırsa, Y’nin 70’ten az olma olasılığı kaçtır? Cevabınızı R programındaki bulgularınızla 2 birlikte destekleyiniz.
+
+### Öğrenciler ve Notlar
+
+<div style="text-align: center;">
+
+| Öğrenci | Olasılık | Matematiksel İstatistik |     Örnekleme.    |
+|---------|----------|-------------------------|-------------------|
+| Gizem   | 88       | 76                      | 51                |
+| Tuncay  | 91       | 82                      | 70                |
+| Can     | 64       | 72                      | 98                |
+| Tuğçe   | 83       | 88                      | 66                |
+| Görkem  | 77       | 80                      | 94                |
+| Akın    | 45       | 60                      | 55                |
+| Ebru    | 48       | 44                      | 73                |
+| Burcu   | 51       | 48                      | 64                |
+| Funda   | 63       | 61                      | 79                |
+| Hande   | 65       | 63                      | 44                |
+
+</div>
+
+## <span style="color:red">Cevap 6</span>
+
+### Adımlar:
+
+1. **Veri Seti Oluşturma**: Öğrencilerin notları bir veri çerçevesi olarak düzenlenir.
+2. **Ortalama Hesaplama**: Üç dersin ortalamasını almak için her öğrencinin notları eşit ağırlıklı olarak toplanır ve bölünür.
+3. **Normallik Testi** : Z scoruna yönelebilmek için Shapiro-Wilk testi ile ortalama notların normal dağılıma uygunluğunu kontrol edeceğiz. Eğer p-değeri 0.05'ten büyükse, normal dağılım varsayımını kabul edebiliriz.
+4. **Zskoru hesaplama** : Normalliğe uyduğu taktirde ortalama ve standart sapma yardımı ile Z skoru hesaplanacak.
+5. **70'ten Küçük Olanları Sayma**: Ortalamaları 70'ten küçük olan öğrenciler sayılır.
+6. **Olasılığı Hesaplama**: Bu sayıyı toplam öğrenci sayısına bölerek olasılık hesaplanır.
+
+
+
+```{r}
+library(knitr)
+library(kableExtra)
+# Verilen notlar
+ogrenciler <- data.frame(
+  Ogrenci = c("Gizem", "Tuncay", "Can", "Tuğçe", "Görkem", "Akın", "Ebru", "Burcu", "Funda", "Hande"),
+  Olasilik = c(88, 91, 64, 83, 77, 45, 48, 51, 63, 65),
+  Matematik = c(76, 82, 72, 88, 80, 60, 44, 48, 61, 63),
+  Regresyon = c(51, 70, 98, 66, 94, 55, 73, 64, 79, 44)
+)
+
+```
+
+```{r}
+ogrenciler$Y <- rowMeans(ogrenciler[, c("Olasilik", "Matematik", "Regresyon")])
+```
+
+
+```{r , echo=FALSE}
+ogrenciler$Y <- rowMeans(ogrenciler[, c("Olasilik", "Matematik", "Regresyon")])
+# Tabloyu oluşturma
+kable(ogrenciler, format = "html", caption = "Öğrenci Notları ve Ortalamaları") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed")) %>%
+  row_spec(0, bold = TRUE, background = "#D3D3D3") %>%
+  column_spec(5, color = "white", background = ifelse(ogrenciler$Y < 70, "salmon", "lightgreen"))
+
+```
+
+
+### Normallik testi
+```{r}
+# Shapiro-Wilk testi ile normallik kontrolü
+shapiro_test <- shapiro.test(ogrenciler$Y)
+shapiro_test
+```
+- **p değeri 0.05 den büyük olduğundan normallik varsayımı sağlanmıştır.**
+
+
+
+```{r}
+# Ortalama ve standart sapma
+mean_Y <- mean(ogrenciler$Y)
+mean_Y
+sd_Y <- sd(ogrenciler$Y)
+sd_Y
+
+# Z-skoru hesaplama
+z_score <- (70 - mean_Y) / sd_Y
+
+# Normal dağılımdan olasılık hesaplama
+probability_normal <- pnorm(z_score)
+probability_normal
+
+```
+
+- **Bu, öğrencilerin eşit ağırlıklı not ortalamaları 70'ten küçük olma olasılığının %56 olduğunu gösteriyor.**
+
+## <span style="color:red">Soru 7</span>
+En çok hangi soru ya da sorularda zorlandığınızı gerekçeleri ile belirtiniz
+
+## <span style="color:red">Cevap 7</span>
+
+- Soruyu anlamak ve sorunun çözümüne istinaden bir çok çözüm yöntemi olması ve ilgili çözümleri kodlamalara taşırken yaşadığım sorunlar nedeniyle beni en çok zorlayan hem yazılımsal hem de matematiksel anlamda 2. soru oldu.
