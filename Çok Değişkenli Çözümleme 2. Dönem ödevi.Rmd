@@ -1,0 +1,386 @@
+
+---
+title: "Çok Değişkenli Çözümleme Dönem Ödevi"
+author: "Mehmet Şenel"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## <span style="color:red">Soru 1</span>
+Verilen matrislerin pozitif tanımlı olup olmadığını belirleyiniz:
+
+- **A**  
+  \[
+  \begin{bmatrix}
+  5 & -4 & 3 \\
+  4 & 3 & 2 \\
+  3 & 2 & 2 \\
+  \end{bmatrix}
+  \]
+
+- **B**  
+  \[
+  \begin{bmatrix}
+  4 & -3 & 1 \\
+  -3 & 4 & 2 \\
+  1 & 2 & 3 \\
+  \end{bmatrix}
+  \]
+
+- **C**  
+  \[
+  \begin{bmatrix}
+  3 & 2 & 1 \\
+  2 & 6 & 3 \\
+  1 & 3 & 1 \\
+  \end{bmatrix}
+  \]
+
+- **D**  
+  \[
+  \begin{bmatrix}
+  3 & 3 & 1 \\
+  3 & 4 & 2 \\
+  1 & 2 & 2 \\
+  \end{bmatrix}
+  \]
+  
+## <span style="color:red">Çözüm 1</span>
+
+### Pozitif Tanımlılık Nedir?
+Bir matrisin pozitif tanımlı olabilmesi için:
+
+1. **Simetrik** olması gerekir.
+2. **Tüm özdeğerlerinin pozitif olması** gerekir.
+
+Bu kriterlerden biri sağlanmazsa, matris pozitif tanımlı değildir.
+
+---
+
+#### Matrislerin Tanımlanması
+```{r}
+# Matrislerin tanımlanması
+A <- matrix(c(5, -4, 3,
+              4, 3, 2,
+              3, 2, 2), nrow = 3, byrow = TRUE)
+
+B <- matrix(c(4, -3, 1,
+              -3, 4, 2,
+              1, 2, 3), nrow = 3, byrow = TRUE)
+
+C <- matrix(c(3, 2, 1,
+              2, 6, 3,
+              1, 3, 1), nrow = 3, byrow = TRUE)
+
+D <- matrix(c(3, 3, 1,
+              3, 4, 2,
+              1, 2, 2), nrow = 3, byrow = TRUE)
+```
+
+#### Özdeğer Kontrolü
+```{r}
+# Pozitif tanımlılığı kontrol eden fonksiyon (özdeğer yöntemi)
+is_positive_definite <- function(mat) {
+  eigenvalues <- eigen(mat)$values
+  all(Re(eigenvalues) > 0) # Sadece gerçek kısmını kontrol et
+}
+```
+- Oluşturulan fonksiyona istinaden matrisler sırasıyla kontrol edilir,
+çıkan cevap "False" ise matrisin pozitif tanımlı olmadığı ,
+çıkan cevap "True" ise matrisin pozitif tanımlı olduğu anlaşılmaktadır.
+
+
+#### Matrislerin kontrolü
+```{r}
+# Sonuçları bir tabloya dökme
+results <- data.frame(
+  Matris = c("A", "B", "C", "D"),
+  Pozitif_Tanimli = c(
+    is_positive_definite(A),
+    is_positive_definite(B),
+    is_positive_definite(C),
+    is_positive_definite(D)
+  )
+)
+
+# Tablo formatında sonuçları göster
+knitr::kable(results, caption = "Matrislerin Pozitif Tanımlılık Sonuçları")
+
+```
+
+
+## <span style="color:red">Soru 2</span>
+Verilen yoğunluk fonksiyonu:
+
+\[
+f(x) = k e^{-\frac{1}{2} Q}
+\]
+
+Burada \( Q \) fonksiyonu şu şekilde verilmiştir:
+
+\[
+Q = x_1^2 + 5x_2^2 + 2x_3^2 + 6x_2x_3 - 4x_1 - 8x_2 - 6x_3 + 9
+\]
+
+Yoğunluk fonksiyonunun yayılım parametresi ve ortalama vektörünü hesaplayınız. En yüksek yayılıma ve en düşük ortalamaya sahip olan değişkenleri belirleyiniz.
+
+## <span style="color:red">Çözüm 2</span>
+
+### 1. \( Q \) Fonksiyonunun Temsili
+
+Verilen \( Q \) fonksiyonu şu şekilde verilmiştir:
+
+\[
+Q = x_1^2 + 5x_2^2 + 2x_3^2 + 6x_2x_3 - 4x_1 - 8x_2 - 6x_3 + 9
+\]
+
+Bu fonksiyon, genel bir kuadratik form olan:
+
+\[
+Q = x^T A x - 2 b^T x + c
+\]
+
+şeklinde temsil edilebilir. Burada:
+- \( A \), kovaryans matrisinin tersi.
+- \( b \), ortalama vektörünü hesaplamak için kullanılan lineer terimlerin katsayıları.
+- \( c \), sabit terimdir.
+
+### 2. Kovaryans Matrisi ve Ortalama Vektörü Hesaplaması
+
+#### Matris Temsili
+
+Fonksiyonu incelediğimizde, \( A \), \( b \), ve \( c \) parametrelerini şu şekilde tanımlayabiliriz:
+
+- \( A = \begin{bmatrix} 2 & 3 & 0 \\ 3 & 10 & 6 \\ 0 & 6 & 4 \end{bmatrix} \)
+- \( b = \begin{bmatrix} 4 \\ 8 \\ 6 \end{bmatrix} \)
+- \( c = 9 \)
+
+Bu parametreleri kullanarak kovaryans matrisi (\( \Sigma \)) ve ortalama vektörünü (\( \mu \)) hesaplayacağız.
+
+```{r}
+# Gerekli paketleri yükle
+library(kableExtra)
+
+# Matris temsili
+A <- matrix(c(2, 3, 0, 
+              3, 10, 6, 
+              0, 6, 4), nrow = 3, byrow = TRUE)
+
+b <- c(4, 8, 6)  # Lineer terimler için katsayılar
+c <- 9           # Sabit terim
+
+# Kovaryans matrisi (Sigma)
+Sigma <- solve(A)
+
+# Ortalama vektörü (mu)
+mu <- solve(A) %*% b
+```
+
+
+```{r}
+# Kovaryans matrisi (Sigma) tablosu
+Sigma_table <- as.data.frame(Sigma)
+colnames(Sigma_table) <- c("x1", "x2", "x3")
+rownames(Sigma_table) <- c("x1", "x2", "x3")
+
+# Ortalama vektörü (mu) tablosu
+mu_table <- as.data.frame(t(mu))
+colnames(mu_table) <- c("mu1", "mu2", "mu3")
+
+# Kovaryans matrisi ve Ortalama vektörü tablosunu stilize etme
+Sigma_table %>%
+  kable("html", caption = "Kovaryans Matrisi (Sigma)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+
+mu_table %>%
+  kable("html", caption = "Ortalama Vektörü (mu)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
+
+
+- Kovaryans Matrisi (Sigma) :
+Kovaryans matrisi, her bir değişkenin birbirleriyle olan ilişkilerini ve varyanslarını gösterir.
+- Ortalama Vektörü (mu) :
+Ortalama vektörü, her bir değişkenin beklenen değerini verir.
+
+
+### 3. En Yüksek Yayılım ve En Düşük Ortalama
+
+```{r}
+# Kovaryans matrisinin köşegenindeki varyanslar
+variances <- diag(Sigma)
+
+# En yüksek varyansa sahip değişken
+highest_variance_index <- which.max(variances)
+# En düşük ortalamaya sahip değişken
+lowest_mean_index <- which.min(mu)
+```
+
+
+```{r}
+cat("En Yüksek Yayılım: Değişken", highest_variance_index, "ile x", highest_variance_index, "vardır.\n")
+cat("En Düşük Ortalama: Değişken", lowest_mean_index, "ile x", lowest_mean_index, "vardır.\n")
+```
+
+
+
+## <span style="color:red">Soru 3</span>
+
+Bir biyoloji araştırmasında, üç farklı gübre türünün (Organik, Kimyasal, Kontrol) bitki büyümesi üzerindeki etkisi incelenmektedir. Araştırmacı, **Bitki Boyu**, **Yaprak Alanı** ve **Biyokütle** ölçümlerini kullanarak her bir gruptaki 30 bitkiyi incelemiştir. Gübre türleri arasında etkinlik açısından fark olup olmadığını sisteme kayıtlı gübre veri setini kullanarak R programında **%95 güven düzeyinde** inceleyerek yorumlayınız.
+
+## <span style="color:red">Çözüm</span>
+
+Bu soruyu çözmek için ANOVA (Varyans Analizi) testi kullanacağız. Verimizdeki her bir değişken için (Bitki Boyu, Yaprak Alanı, Biyokütle) gruplar arasındaki farkı test edeceğiz. Ayrıca, verilerin normal dağılım gösterip göstermediğini kontrol etmek için **Shapiro-Wilk testi** ve **Histogram Grafikleri**, varyansların eşitliğini test etmek için ise **Levene testi** uygulanacaktır.
+
+### 1. Veriyi Yükleme
+
+Veriyi **`read_excel`** fonksiyonu ile yükleyeceğiz ve veri setini inceleyeceğiz.
+
+```{r}
+# Gerekli paketleri yükleyelim
+library(readxl)
+
+# Dosya yolunu belirtelim
+gubre_1_ <- read_excel("/Users/mehmetsenel/Desktop/gubre (1).xlsx")
+
+# İlk birkaç satırı görüntüleyelim ve estetik formatla gösterelim
+library(knitr)
+kable(head(gubre_1_), caption = "İlk 6 Satır - Gübre Verisi", format = "html", align = "c")
+
+```
+
+### 2. Görselleştirme ve Normal Dağılım Testi (Shapiro-Wilk)
+
+```{r}
+# Shapiro-Wilk testi ile normal dağılım kontrolü
+shapiro_test_boyu <- shapiro.test(gubre_1_$`Bitki Boyu (cm)`)
+shapiro_test_yaprak <- shapiro.test(gubre_1_$`Yaprak Alanı (cm²)`)
+shapiro_test_biyokutle <- shapiro.test(gubre_1_$`Biyokütle (g)`)
+
+```
+
+```{r}
+shapiro_test_boyu
+shapiro_test_yaprak
+shapiro_test_biyokutle
+
+```
+- Her üç değişken içinde p değeri 0.05 den büyük olması nedeniyle normal dağılmadığını(ödev için görmezden gelinicektir.) söyleyebiliriz.
+
+```{r}
+# Histogramlarla normal dağılım kontrolü
+par(mfrow = c(1, 3))
+hist(gubre_1_$`Bitki Boyu (cm)`, main = "Bitki Boyu Dağılımı", xlab = "Bitki Boyu", col = "lightblue")
+hist(gubre_1_$`Yaprak Alanı (cm²)`, main = "Yaprak Alanı Dağılımı", xlab = "Yaprak Alanı", col = "lightgreen")
+hist(gubre_1_$`Biyokütle (g)`, main = "Biyokütle Dağılımı", xlab = "Biyokütle", col = "lightpink")
+```
+
+
+### 3. Varyans homojenliği kontrolü
+```{r,  message = FALSE, warning = FALSE}
+# Levene testi
+library(car)
+leveneTest(`Bitki Boyu (cm)` ~ Grup, data = gubre_1_)
+leveneTest(`Yaprak Alanı (cm²)` ~ Grup, data = gubre_1_)
+leveneTest(`Biyokütle (g)` ~ Grup, data = gubre_1_)
+```
+
+
+### 4. ANOVA Testi
+
+```{r}
+# ANOVA testleri
+anova_boyu <- aov(`Bitki Boyu (cm)` ~ Grup, data = gubre_1_)
+anova_yaprak <- aov(`Yaprak Alanı (cm²)` ~ Grup, data = gubre_1_)
+anova_biyokutle <- aov(`Biyokütle (g)` ~ Grup, data = gubre_1_)
+```
+
+
+```{r}
+# Sonuçları görüntüleme
+summary(anova_boyu)
+summary(anova_yaprak)
+summary(anova_biyokutle)
+
+```
+
+### Sonuç:
+- p-değeriniz 0.05'ten küçükse, ANOVA testi ile gruplar arasında anlamlı bir fark bulunduğunu ve gübre türlerinin bitki boyu, yaprak alanı veya biyokütle üzerinde farklı etkiler yaratabileceğini söyleyebiliriz.
+
+- İleri Adım: Eğer fark varsa, hangi gruplar arasında fark olduğunu görmek için post-hoc testleri (örneğin Tukey HSD testi) uygulayabiliriz.
+
+```{r}
+# Tukey HSD testi
+tukey_boyu <- TukeyHSD(anova_boyu)
+tukey_yaprak <- TukeyHSD(anova_yaprak)
+tukey_biyokutle <- TukeyHSD(anova_biyokutle)
+```
+
+
+```{r}
+# Sonuçları görüntüleme
+print(tukey_boyu)
+print(tukey_yaprak)
+print(tukey_biyokutle)
+
+```
+
+
+### Sonuç Yorumu:
+- Kimyasal gübre tüm ölçülen parametrelerde (bitki boyu, yaprak alanı, biyokütle) kontrol grubuna kıyasla anlamlı şekilde daha iyi performans göstermektedir.
+- Organik gübre, kimyasal gübreye kıyasla bitki boyu, yaprak alanı ve biyokütle ölçümlerinde daha düşük sonuçlar elde etmiştir, ancak kontrol grubuna kıyasla her üç ölçümde de anlamlı farklar bulunmuştur.
+- Sonuçlar, kimyasal gübrenin bitki gelişimi üzerinde en iyi etkiye sahip olduğunu göstermektedir, ancak organik gübre de kontrol grubuna göre belirgin bir iyileşme sağlamaktadır.
+
+
+Bu sonuçlar, kimyasal gübrenin bitki büyümesi üzerinde daha güçlü bir etki yaptığını ve organik gübrenin de etkili bir seçenek olabileceğini ortaya koymaktadır.
+
+## <span style="color:red;">Soru 4</span>
+Bir tekstil mağazasının yöneticisi, 10 farklı dönemde "klasik mavi" kazak satışlarını incelemiş ve satılan kazak sayısını (X1), fiyat değişimini (X2, Euro cinsinden), yerel gazetelerdeki reklam maliyetlerini (X3, Euro cinsinden) ve satış asistanının varlığını (X4, dönem başına saat olarak) gözlemlemiştir. Dönemler boyunca aşağıdaki veri matrisini kaydetmiş ve fiyat değişimlerinin, satılan kazak sayısı üzerinde büyük bir etkisi olması gerektiğine ikna olmuştur. Sizce mağaza yöneticisi bu görüşünde haklı mıdır? Haklıysa ya da haklı değilse neden? Cevabınızı R programındaki bulgularınızla birlikte destekleyiniz.
+
+X =
+\[
+\begin{bmatrix}
+230 & 181 & 165 & 150 & 97 & 192 & 181 & 189 & 172 & 170 \\
+125 & 99 & 97 & 115 & 120 & 100 & 80 & 90 & 95 & 125 \\
+200 & 55 & 105 & 85 & 0 & 150 & 85 & 120 & 110 & 130 \\
+109 & 107 & 98 & 71 & 82 & 103 & 111 & 93 & 86 & 78 \\
+\end{bmatrix}
+\]
+
+## <span style="color:red;">Çözüm 4</span>
+
+- Bu soruyu çözmek için, fiyat değişimi (X2) ile satılan kazak sayısı (X1) arasındaki ilişkiyi inceleyeceğiz. Bunun için **korelasyon analizi** yapacağız.
+- Bu soruda sadece X1 ve X2'yi inceleyeceğiz çünkü soruda fiyat değişiminin satılan kazak sayısı üzerindeki etkisini test etmek isteniyor. Diğer değişkenler de satışları etkileyebilir, ancak bu soruda sorulmak istenen soru, yalnızca fiyat değişiminin etkisiyle ilgili olduğu için sadece bu iki değişken incelenecektir. Eğer daha geniş bir analiz yapmamız gerekseydi, tüm değişkenler göz önünde bulundurularak daha karmaşık bir analiz (çok değişkenli regresyon) yapılabilirdi.
+
+```{r}
+# Veriyi tanımlama
+X1 <- c(230, 181, 165, 150, 97, 192, 181, 189, 172, 170)
+X2 <- c(125, 99, 97, 115, 120, 100, 80, 90, 95, 125)
+
+# Korelasyon hesaplama
+korelasyon <- cor(X1, X2)
+
+# Sonucu yazdırma
+cat("X1 (Satılan Kazak Sayısı) ile X2 (Fiyat Değişimi) arasındaki korelasyon:", korelasyon, "\n")
+```
+
+Korelasyon Katsayısının Yorumlanması
+Korelasyon katsayısı, -1 ile 1 arasında bir değer alır:
+
+- +1: Mükemmel pozitif ilişki (değişkenler tamamen aynı yönde hareket eder)
+- -1: Mükemmel negatif ilişki (değişkenler tam ters yönde hareket eder)
+- 0: Hiçbir ilişki yok (değişkenler arasında doğrusal bir ilişki bulunmaz)
+
+```{r}
+# Korelasyon katsayısına göre değerlendirme
+if(korelasyon > 1) {
+  cat("Fiyat değişimi ile satılan kazak sayısı arasında güçlü bir pozitif ilişki var.\n")
+} else if(korelasyon < -1) {
+  cat("Fiyat değişimi ile satılan kazak sayısı arasında güçlü bir negatif ilişki var.\n")
+} else {
+  cat("Fiyat değişimi ile satılan kazak sayısı arasında zayıf veya hiçbir ilişki yok.\n")
+}
+```
+
+### Sonuç 
+- Yöneticiye Göre: Mağaza yöneticisinin fiyat değişimlerinin satışlar üzerinde büyük bir etkisi olduğunu düşündüğü ifade ediliyordu. Ancak, hesaplanan korelasyon (-0.17) bu görüşü tam olarak desteklemiyor. Fiyat değişimi ile satılan kazak sayısı arasında zayıf bir negatif ilişki bulunuyor. Bu, fiyat değişiminin satışları üzerinde önemli bir etkisi olmadığına işaret eder.Satılan kazak sayısı ve fiyat değişimi arasındaki ilişki çok güçlü ve anlamlı değil.
